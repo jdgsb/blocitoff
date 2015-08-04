@@ -32,25 +32,23 @@ class User < ActiveRecord::Base
    # This is in addition to a real persisted field like 'username'
    attr_accessor :login
 
-   def self.find_first_by_auth_conditions(warden_conditions)
-      conditions = warden_conditions.dup
-      if login = conditions.delete(:login)
-        where(conditions).where(["lower(username) = :value OR lower(email) = :value", { :value => login.downcase }]).first
-      else
-        if conditions[:username].nil?
-          where(conditions).first
-        else
-          where(username: conditions[:username]).first
-        end
-      end
-    end
 
-  def login=(login)
-    @login = login
-  end
+   def self.find_for_database_authentication(warden_conditions)
+       conditions = warden_conditions.dup
+       if login = conditions.delete(:login).downcase
+          where(conditions.to_hash).where(["username = :value OR lower(email) = lower(:value)", { :value => login }]).first
+       else
+          where(conditions.to_hash).first
+       end
+     end
 
-  def login
-    @login || self.username || self.email
-  end
+
+   def self.send_reset_password_instructions(attributes={})
+     recoverable = find_or_initialize_with_errors([:email], attributes, :not_found)
+     recoverable.send_reset_password_instructions if recoverable.persisted?
+     recoverable
+   end
+
+
 
 end
