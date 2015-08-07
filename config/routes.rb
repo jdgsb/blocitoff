@@ -1,16 +1,22 @@
 Rails.application.routes.draw do
 
+  get 'items/create'
+
   get 'welcome/index'
 
   get '/welcome' => "users#show", as: :user_root
 
   devise_for :users
-  resource :users
+  resource :users, only: [:show]
+  resources :items, only: [:create]
+
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
   # You can have the root of your site routed with "root"
+
+
   root 'welcome#index'
 
   # Example of regular route:
