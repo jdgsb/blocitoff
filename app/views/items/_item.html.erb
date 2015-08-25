@@ -1,1 +1,4 @@
-<%= item.name %><br/>
+<div id=<%="item-#{item.id}" %>>
+  <%= item.name %> <p><%= item.days_left %></p>
+  <%= link_to '', user_item_path(@user.id, item.id), method: :delete, class: 'glyphicon glyphicon-ok', remote: true %> <br/>
+</div>
